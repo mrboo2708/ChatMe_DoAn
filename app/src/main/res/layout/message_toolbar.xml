@@ -9,7 +9,7 @@
 
         <variable
             name="activity"
-            type="com.example.chatme.MessageActivity" />
+            type="com.example.chatme_doan.MessageActivity" />
 
         <variable
             name="status"
