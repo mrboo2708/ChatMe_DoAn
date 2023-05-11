@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.provider.ContactsContract;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -73,6 +74,7 @@ public class GroupMemberFragment extends Fragment implements ContactItemInterfac
 
         Bundle bundle = getArguments();
         if (bundle != null) {
+            Log.d("checkBundle",bundle.getString("GroupName"));
             groupName = bundle.getString("GroupName");
             imageUri = bundle.getString("GroupImage");
             groupImage = Uri.parse(imageUri);
@@ -126,15 +128,17 @@ public class GroupMemberFragment extends Fragment implements ContactItemInterfac
                     while (cursor.moveToNext()) {
 
                         int nameNum = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
-                        String name = Integer.toString(nameNum);
+                        String name = cursor.getString(nameNum);
                         int numberNum = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
-                        String number = Integer.toString(numberNum);
+                        String number = cursor.getString(numberNum);
+                        Log.d("checkdata",name+number);
+
 
                         number = number.replaceAll("\\s", "");
                         String num = String.valueOf(number.charAt(0));
 
                         if (num.equals("0"))
-                            number = number.replaceFirst("(?:0)+", "+92");
+                            number = number.replaceFirst("(?:0)+", "+1");
 
                         UserModel userModel = new UserModel();
                         userModel.setName(name);

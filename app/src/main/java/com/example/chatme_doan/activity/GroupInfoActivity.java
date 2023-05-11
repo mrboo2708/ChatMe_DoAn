@@ -1,12 +1,5 @@
 package com.example.chatme_doan.activity;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -18,18 +11,23 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
 import com.bumptech.glide.Glide;
-import com.example.chatme_doan.adapter.GroupMemberAdapter;
-import com.example.chatme_doan.constants.AllConstants;
 import com.example.chatme_doan.GroupModel;
 import com.example.chatme_doan.Interface.MemberItemInterface;
-import com.example.chatme_doan.permissions.Permissions;
 import com.example.chatme_doan.R;
 import com.example.chatme_doan.UserModel;
+import com.example.chatme_doan.adapter.GroupMemberAdapter;
+import com.example.chatme_doan.constants.AllConstants;
 import com.example.chatme_doan.databinding.ActivityGroupInfoBinding;
 import com.example.chatme_doan.databinding.AdminDialogLayoutBinding;
+import com.example.chatme_doan.permissions.Permissions;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -39,23 +37,21 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class GroupInfoActivity extends AppCompatActivity implements MemberItemInterface {
 
-    private ActivityGroupInfoBinding binding;
-    private GroupModel currentGroup;
+    ActivityGroupInfoBinding binding;
+    GroupModel currentGroup;
     ArrayList<UserModel> arrayList;
     AlertDialog alertDialog;
     Permissions permissions;
     Uri imageUri;
-    private GroupMemberAdapter memberAdapter;
+    GroupMemberAdapter memberAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,13 +148,9 @@ public class GroupInfoActivity extends AppCompatActivity implements MemberItemIn
         });
 
 
-        binding.cardExitGroup.setOnClickListener(view -> {
-            exitGroup();
-        });
+        binding.cardExitGroup.setOnClickListener(view -> exitGroup());
 
-        binding.cardDeleteGroup.setOnClickListener(view -> {
-            deleteGroup();
-        });
+        binding.cardDeleteGroup.setOnClickListener(view -> deleteGroup());
 
 
     }
@@ -168,33 +160,24 @@ public class GroupInfoActivity extends AppCompatActivity implements MemberItemIn
         new AlertDialog.Builder(this)
                 .setTitle("Delete Group")
                 .setMessage("Are you sure to delete the group?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Group Detail")
-                                .child(currentGroup.id);
-                        reference.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    DatabaseReference database = FirebaseDatabase.getInstance().getReference("Group Message")
-                                            .child(currentGroup.id);
-                                    database.removeValue();
-                                    Toast.makeText(GroupInfoActivity.this, "Group Deleted", Toast.LENGTH_SHORT).show();
-                                    onBackPressed();
-                                } else {
-                                    Toast.makeText(GroupInfoActivity.this, "Error : " + task.getException(), Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Group Detail")
+                            .child(currentGroup.id);
+                    reference.removeValue().addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            DatabaseReference database = FirebaseDatabase.getInstance().getReference("Group Message")
+                                    .child(currentGroup.id);
+                            database.removeValue();
+                            Toast.makeText(GroupInfoActivity.this, "Group Deleted", Toast.LENGTH_SHORT).show();
+                            onBackPressed();
+                        } else {
+                            Toast.makeText(GroupInfoActivity.this, "Error : " + task.getException(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
 
-                    }
                 })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                .setNegativeButton("No", (dialog, which) -> {
 
-                    }
                 })
                 .create().show();
 
@@ -206,31 +189,22 @@ public class GroupInfoActivity extends AppCompatActivity implements MemberItemIn
         new AlertDialog.Builder(this)
                 .setTitle("Leave Group")
                 .setMessage("Are you sure to leave the group?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Group Detail")
-                                .child(currentGroup.id)
-                                .child("Members").child(FirebaseAuth.getInstance().getUid());
-                        reference.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(GroupInfoActivity.this, "Group Leaved", Toast.LENGTH_SHORT).show();
-                                    onBackPressed();
-                                } else {
-                                    Toast.makeText(GroupInfoActivity.this, "Error : " + task.getException(), Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Group Detail")
+                            .child(currentGroup.id)
+                            .child("Members").child(FirebaseAuth.getInstance().getUid());
+                    reference.removeValue().addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(GroupInfoActivity.this, "Group Leaved", Toast.LENGTH_SHORT).show();
+                            onBackPressed();
+                        } else {
+                            Toast.makeText(GroupInfoActivity.this, "Error : " + task.getException(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
 
-                    }
                 })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                .setNegativeButton("No", (dialog, which) -> {
 
-                    }
                 })
                 .create().show();
     }
@@ -287,33 +261,30 @@ public class GroupInfoActivity extends AppCompatActivity implements MemberItemIn
     private void updateGroupImage() {
 
         StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-        storageReference.child(currentGroup.id + AllConstants.GROUP_IMAGE).putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Toast.makeText(GroupInfoActivity.this, "Uploading Image.....", Toast.LENGTH_SHORT).show();
-                Task<Uri> image = taskSnapshot.getStorage().getDownloadUrl();
-                image.addOnCompleteListener(new OnCompleteListener<Uri>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Uri> task) {
-                        if (task.isSuccessful()) {
-                            String url = task.getResult().toString();
-                            currentGroup.image = url;
-                            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Group Detail")
-                                    .child(currentGroup.id);
-                            Map<String, Object> map = new HashMap<>();
-                            map.put("image", url);
-                            reference.updateChildren(map);
-                            Glide.with(GroupInfoActivity.this).load(url).into(binding.expandedImage);
-                            Toast.makeText(GroupInfoActivity.this, "Image Updated", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Log.d("TAG", "onComplete: " + task.getException());
-                            Toast.makeText(GroupInfoActivity.this, "Error : " + task.getException(), Toast.LENGTH_SHORT).show();
-                        }
-
+        storageReference.child(currentGroup.id + AllConstants.GROUP_IMAGE).putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
+            Toast.makeText(GroupInfoActivity.this, "Uploading Image.....", Toast.LENGTH_SHORT).show();
+            Task<Uri> image = taskSnapshot.getStorage().getDownloadUrl();
+            image.addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()) {
+                        String url = task.getResult().toString();
+                        currentGroup.image = url;
+                        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Group Detail")
+                                .child(currentGroup.id);
+                        Map<String, Object> map = new HashMap<>();
+                        map.put("image", url);
+                        reference.updateChildren(map);
+                        Glide.with(GroupInfoActivity.this).load(url).into(binding.expandedImage);
+                        Toast.makeText(GroupInfoActivity.this, "Image Updated", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Log.d("TAG", "onComplete: " + task.getException());
+                        Toast.makeText(GroupInfoActivity.this, "Error : " + task.getException(), Toast.LENGTH_SHORT).show();
                     }
-                });
 
-            }
+                }
+            });
+
         });
     }
 

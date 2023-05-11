@@ -116,9 +116,9 @@ public class AddMemberActivity extends AppCompatActivity implements ContactItemI
                     while (cursor.moveToNext()) {
 
                         int nameNum = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
-                        String name = Integer.toString(nameNum);
+                        String name = cursor.getString(nameNum);
                         int numberNum = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
-                        String number = Integer.toString(numberNum);
+                        String number = cursor.getString(numberNum);
 
 
                         number = number.replaceAll("\\s", "");

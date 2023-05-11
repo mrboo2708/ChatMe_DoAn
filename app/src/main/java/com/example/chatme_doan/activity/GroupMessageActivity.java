@@ -416,7 +416,7 @@ public class GroupMessageActivity extends AppCompatActivity {
         mediaRecorder = new MediaRecorder();
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
         File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "ChatMe/Media/Group/Recording");
 

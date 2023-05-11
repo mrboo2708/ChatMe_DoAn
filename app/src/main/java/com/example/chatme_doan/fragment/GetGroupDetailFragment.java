@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,6 +60,7 @@ public class GetGroupDetailFragment extends Fragment {
                     Bundle bundle = new Bundle();
                     bundle.putString("GroupName", groupName);
                     bundle.putString("GroupImage", imageUri.toString());
+                    Log.d("check",groupName);
                     GroupMemberFragment memberFragment = new GroupMemberFragment();
                     memberFragment.setArguments(bundle);
                     getFragmentManager().beginTransaction().replace(R.id.groupContainer, memberFragment)
