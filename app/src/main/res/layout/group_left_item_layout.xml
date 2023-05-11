@@ -7,7 +7,7 @@
 
         <variable
             name="groupMessage"
-            type="com.example.chatme.GroupMessageModel" />
+            type="com.example.chatme_doan.GroupMessageModel" />
     </data>
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"

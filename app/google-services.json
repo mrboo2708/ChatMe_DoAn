@@ -45,17 +45,17 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:98915380649:android:2ead48951da1202df1a8b8",
+        "mobilesdk_app_id": "1:98915380649:android:41fa47e24a29b522f1a8b8",
         "android_client_info": {
-          "package_name": "com.example.chatme"
+          "package_name": "com.example.chatme_doan"
         }
       },
       "oauth_client": [
         {
-          "client_id": "98915380649-6epqsdmn84a397ung44puv5t5rdnvnct.apps.googleusercontent.com",
+          "client_id": "98915380649-o4jn5t4f8042goog871khkigd3p9utrf.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.chatme",
+            "package_name": "com.example.chatme_doan",
             "certificate_hash": "854f4d23b52b840c1bb51e9fd3a8bc945a120d64"
           }
         },

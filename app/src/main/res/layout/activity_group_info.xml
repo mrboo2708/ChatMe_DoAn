@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/cardview_shadow_end_color"
     android:fitsSystemWindows="true"
-    tools:context=".Activity.GroupInfoActivity">
+    tools:context=".activity.GroupInfoActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBar"
