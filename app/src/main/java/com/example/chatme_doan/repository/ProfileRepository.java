@@ -5,10 +5,9 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+
 import com.example.chatme_doan.UserModel;
 import com.example.chatme_doan.utils.Util;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -59,15 +58,12 @@ public class ProfileRepository {
         databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(util.getUID());
         Map<String, Object> map = new HashMap<>();
         map.put("image", uri);
-        databaseReference.updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
-                    userModel.setImage(uri);
-                    liveData.setValue(userModel);
-                    Log.d("image", "onComplete: Image updated");
-                } else Log.d("image", "onComplete: " + task.getException());
-            }
+        databaseReference.updateChildren(map).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                userModel.setImage(uri);
+                liveData.setValue(userModel);
+                Log.d("image", "onComplete: Image updated");
+            } else Log.d("image", "onComplete: " + task.getException());
         });
     }
 
@@ -76,15 +72,12 @@ public class ProfileRepository {
         databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(util.getUID());
         Map<String, Object> map = new HashMap<>();
         map.put("status", status);
-        databaseReference.updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
-                    userModel.setStatus(status);
-                    liveData.setValue(userModel);
-                    Log.d("status", "onComplete: Status Updated");
-                } else Log.d("status", "onComplete: " + task.getException());
-            }
+        databaseReference.updateChildren(map).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                userModel.setStatus(status);
+                liveData.setValue(userModel);
+                Log.d("status", "onComplete: Status Updated");
+            } else Log.d("status", "onComplete: " + task.getException());
         });
     }
 
@@ -94,15 +87,12 @@ public class ProfileRepository {
         databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(util.getUID());
         Map<String, Object> map = new HashMap<>();
         map.put("name", name);
-        databaseReference.updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
-                    userModel.setName(name);
-                    liveData.setValue(userModel);
-                    Log.d("name", "onComplete: Name Updated");
-                } else Log.d("name", "onComplete:" + task.getException());
-            }
+        databaseReference.updateChildren(map).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                userModel.setName(name);
+                liveData.setValue(userModel);
+                Log.d("name", "onComplete: Name Updated");
+            } else Log.d("name", "onComplete:" + task.getException());
         });
     }
 }

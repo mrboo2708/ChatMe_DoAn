@@ -18,13 +18,11 @@ import com.example.chatme_doan.GroupMessageModel;
 import com.example.chatme_doan.MessageModel;
 import com.example.chatme_doan.R;
 import com.example.chatme_doan.utils.Util;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.iceteck.silicompressorr.SiliCompressor;
 
 import java.io.File;
@@ -130,20 +128,17 @@ public class SendMediaService extends Service {
 
         StorageReference storageReference = FirebaseStorage.getInstance().getReference(chatID + "/Media/Images/" + util.getUID() + "/" + System.currentTimeMillis());
         Uri uri = Uri.fromFile(new File(fileName));
-        storageReference.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Task<Uri> task = taskSnapshot.getStorage().getDownloadUrl();
-                task.addOnCompleteListener(uri -> {
-                    if (uri.isSuccessful()) {
-                        String url = uri.getResult().toString();
+        storageReference.putFile(uri).addOnSuccessListener(taskSnapshot -> {
+            Task<Uri> task = taskSnapshot.getStorage().getDownloadUrl();
+            task.addOnCompleteListener(uri1 -> {
+                if (uri1.isSuccessful()) {
+                    String url = uri1.getResult().toString();
 
-                        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Chat").child(chatID);
-                        MessageModel messageModel = new MessageModel(util.getUID(), hisID, url, util.currentData(), "image");
-                        databaseReference.push().setValue(messageModel);
-                    }
-                });
-            }
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Chat").child(chatID);
+                    MessageModel messageModel = new MessageModel(util.getUID(), hisID, url, util.currentData(), "image");
+                    databaseReference.push().setValue(messageModel);
+                }
+            });
         });
     }
 
@@ -164,27 +159,24 @@ public class SendMediaService extends Service {
         StorageReference storageReference = FirebaseStorage.getInstance().getReference(groupId + "/Media/Images/"
                 + util.getUID() + "/" + System.currentTimeMillis());
         Uri uri = Uri.fromFile(new File(fileName));
-        storageReference.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Task<Uri> image = taskSnapshot.getStorage().getDownloadUrl();
-                image.addOnCompleteListener(task -> {
+        storageReference.putFile(uri).addOnSuccessListener(taskSnapshot -> {
+            Task<Uri> image = taskSnapshot.getStorage().getDownloadUrl();
+            image.addOnCompleteListener(task -> {
 
-                    if (task.isSuccessful()) {
-                        String url = task.getResult().toString();
-                        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Group Message")
-                                .child(groupId);
-                        GroupMessageModel messageModel = new GroupMessageModel("image", url,
-                                String.valueOf(System.currentTimeMillis()), util.getUID());
+                if (task.isSuccessful()) {
+                    String url = task.getResult().toString();
+                    DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Group Message")
+                            .child(groupId);
+                    GroupMessageModel messageModel = new GroupMessageModel("image", url,
+                            String.valueOf(System.currentTimeMillis()), util.getUID());
 
-                        reference.push().setValue(messageModel);
+                    reference.push().setValue(messageModel);
 
 
-                    }
+                }
 
-                });
+            });
 
-            }
         });
     }
 }

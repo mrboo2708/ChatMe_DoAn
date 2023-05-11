@@ -53,13 +53,10 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         final UserModel userModel = arrayList.get(position);
         holder.layoutBinding.setUserModel(userModel);
 
-        holder.layoutBinding.imgContact.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, UserInfo.class);
-                intent.putExtra("userID", userModel.getuID());
-                context.startActivity(intent);
-            }
+        holder.layoutBinding.imgContact.setOnClickListener(v -> {
+            Intent intent = new Intent(context, UserInfo.class);
+            intent.putExtra("userID", userModel.getuID());
+            context.startActivity(intent);
         });
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {

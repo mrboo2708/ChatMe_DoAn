@@ -7,16 +7,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.example.chatme_doan.constants.AllConstants;
 import com.example.chatme_doan.R;
 import com.example.chatme_doan.UserModel;
+import com.example.chatme_doan.constants.AllConstants;
 import com.example.chatme_doan.databinding.FragmentVerifyNumberBinding;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
@@ -89,16 +85,13 @@ public class VerifyNumber extends Fragment {
             OTP = bundle.getString(AllConstants.VERIFICATION_CODE);
         }
 
-        binding.btnVerify.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkPin();
-                if (checkPin()) {
-                    binding.progressLayout.setVisibility(View.VISIBLE);
-                    binding.progressBar.start();
+        binding.btnVerify.setOnClickListener(v -> {
+            checkPin();
+            if (checkPin()) {
+                binding.progressLayout.setVisibility(View.VISIBLE);
+                binding.progressBar.start();
 
-                    verifyPin(pin);
-                }
+                verifyPin(pin);
             }
         });
 
@@ -129,34 +122,28 @@ public class VerifyNumber extends Fragment {
     private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
 
 
-        firebaseAuth.signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
+        firebaseAuth.signInWithCredential(credential).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
 
-                    FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(data -> {
+                FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(data -> {
 
-                        String token = data.getResult().getToken();
-                        UserModel userModel = new UserModel("", "", "", firebaseAuth.getCurrentUser().getPhoneNumber(),
-                                firebaseAuth.getUid(), "online", "false",token);
-                        databaseReference.child(firebaseAuth.getUid()).setValue(userModel).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
+                    String token = data.getResult().getToken();
+                    UserModel userModel = new UserModel("", "", "", firebaseAuth.getCurrentUser().getPhoneNumber(),
+                            firebaseAuth.getUid(), "online", "false",token);
+                    databaseReference.child(firebaseAuth.getUid()).setValue(userModel).addOnCompleteListener(task1 -> {
+                        if (task1.isSuccessful()) {
 
-                                    getFragmentManager().beginTransaction().replace(R.id.container, new UserData()).commit();
-                                    binding.progressLayout.setVisibility(View.GONE);
-                                    binding.progressBar.stop();
+                            getFragmentManager().beginTransaction().replace(R.id.container, new UserData()).commit();
+                            binding.progressLayout.setVisibility(View.GONE);
+                            binding.progressBar.stop();
 
-                                } else
-                                    Toast.makeText(getContext(), "" + task.getException(), Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                        } else
+                            Toast.makeText(getContext(), "" + task1.getException(), Toast.LENGTH_SHORT).show();
                     });
+                });
 
-                } else
-                    Toast.makeText(getContext(), "" + task.getResult(), Toast.LENGTH_SHORT).show();
-            }
+            } else
+                Toast.makeText(getContext(), "" + task.getResult(), Toast.LENGTH_SHORT).show();
         });
     }
 }

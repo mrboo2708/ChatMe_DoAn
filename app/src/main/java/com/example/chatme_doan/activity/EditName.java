@@ -10,6 +10,8 @@ import com.example.chatme_doan.constants.AllConstants;
 import com.example.chatme_doan.utils.Util;
 import com.example.chatme_doan.databinding.ActivityEditNameBinding;
 
+import java.util.Objects;
+
 public class EditName extends AppCompatActivity {
 
     private ActivityEditNameBinding binding;
@@ -24,7 +26,7 @@ public class EditName extends AppCompatActivity {
         setContentView(view);
         util = new Util();
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         if (getIntent().hasExtra("name")) {
             String name = getIntent().getStringExtra("name");
@@ -39,15 +41,12 @@ public class EditName extends AppCompatActivity {
             }
         }
 
-        binding.btnEditName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (checkFName() & checkLName()) {
-                    Intent intent = new Intent();
-                    intent.putExtra("name", fName + " " + lName);
-                    setResult(AllConstants.USERNAME_CODE, intent);
-                    finish();
-                }
+        binding.btnEditName.setOnClickListener(v -> {
+            if (checkFName() & checkLName()) {
+                Intent intent = new Intent();
+                intent.putExtra("name", fName + " " + lName);
+                setResult(AllConstants.USERNAME_CODE, intent);
+                finish();
             }
         });
     }

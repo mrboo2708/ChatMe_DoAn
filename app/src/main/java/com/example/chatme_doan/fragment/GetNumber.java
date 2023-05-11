@@ -80,15 +80,12 @@ public class GetNumber extends Fragment {
         View view = binding.getRoot();
 
 
-        binding.btnGenerateOTP.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkNumber();
-                if (checkNumber()) {
-                    String phoneNumber = binding.countryCodePicker.getSelectedCountryCodeWithPlus() + number;
+        binding.btnGenerateOTP.setOnClickListener(v -> {
+            checkNumber();
+            if (checkNumber()) {
+                String phoneNumber = binding.countryCodePicker.getSelectedCountryCodeWithPlus() + number;
 
-                    sendOTP(phoneNumber);
-                }
+                sendOTP(phoneNumber);
             }
         });
         return view;

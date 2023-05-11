@@ -39,9 +39,7 @@ public class SelectedContactAdapter extends RecyclerView.Adapter<SelectedContact
         if (userModels != null) {
             UserModel userModel = userModels.get(position);
             Glide.with(context).load(userModel.getImage()).into(holder.binding.imgSelectedContact);
-            holder.itemView.setOnClickListener(view -> {
-                contactItemInterface.onContactClick(userModel, position, true);
-            });
+            holder.itemView.setOnClickListener(view -> contactItemInterface.onContactClick(userModel, position, true));
         }
 
     }

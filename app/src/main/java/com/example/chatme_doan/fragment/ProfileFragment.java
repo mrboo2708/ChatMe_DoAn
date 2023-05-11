@@ -64,23 +64,20 @@ public class ProfileFragment extends Fragment {
         profileViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication()).create(ProfileViewModel.class);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Profile");
 
-        Observer<UserModel> observer = new Observer<UserModel>() {
-            @Override
-            public void onChanged(UserModel userModel) {
+        Observer<UserModel> observer = userModel -> {
 
-                binding.setUserModel(userModel);
-                user = userModel;
-                String name = userModel.getName();
-                if (name.contains(" ")) {
-                    String[] split = name.split(" ");
-                    binding.txtProfileFName.setText(split[0]);
-                    binding.txtProfileLName.setText(split[1]);
-                } else {
-                    binding.txtProfileFName.setText(name);
-                    binding.txtProfileLName.setText("");
-                }
-
+            binding.setUserModel(userModel);
+            user = userModel;
+            String name = userModel.getName();
+            if (name.contains(" ")) {
+                String[] split = name.split(" ");
+                binding.txtProfileFName.setText(split[0]);
+                binding.txtProfileLName.setText(split[1]);
+            } else {
+                binding.txtProfileFName.setText(name);
+                binding.txtProfileLName.setText("");
             }
+
         };
         profileViewModel.getUser().observe(getViewLifecycleOwner(), observer);
         binding.imgPickImage.setOnClickListener(new View.OnClickListener() {
@@ -92,45 +89,36 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        binding.imgEditStatus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                View view1 = LayoutInflater.from(getContext()).inflate(R.layout.dialog_layout, null);
-                builder.setView(view1);
+        binding.imgEditStatus.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            View view1 = LayoutInflater.from(getContext()).inflate(R.layout.dialog_layout, null);
+            builder.setView(view1);
 
-                final EditText edtStatus = view1.findViewById(R.id.edtUserStatus);
-                Button btnEditStatus = view1.findViewById(R.id.btnEditStatus);
+            final EditText edtStatus = view1.findViewById(R.id.edtUserStatus);
+            Button btnEditStatus = view1.findViewById(R.id.btnEditStatus);
 
-                btnEditStatus.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        String status = edtStatus.getText().toString().trim();
-                        if (!status.isEmpty()) {
-                            profileViewModel.editStatus(status);
-                            alertDialog.dismiss();
+            btnEditStatus.setOnClickListener(v1 -> {
+                String status = edtStatus.getText().toString().trim();
+                if (!status.isEmpty()) {
+                    profileViewModel.editStatus(status);
+                    alertDialog.dismiss();
 
-                        }
-                    }
-                });
+                }
+            });
 
-                alertDialog = builder.create();
-                alertDialog.show();
+            alertDialog = builder.create();
+            alertDialog.show();
 
-            }
         });
 
-        binding.cardName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!user.getName().isEmpty()) {
-                    Intent intent = new Intent(getContext(), EditName.class);
-                    intent.putExtra("name", user.getName());
-                    startActivityForResult(intent, AllConstants.USERNAME_CODE);
-                } else {
-                    Intent intent = new Intent(getContext(), EditName.class);
-                    startActivityForResult(intent, AllConstants.USERNAME_CODE);
-                }
+        binding.cardName.setOnClickListener(v -> {
+            if (!user.getName().isEmpty()) {
+                Intent intent = new Intent(getContext(), EditName.class);
+                intent.putExtra("name", user.getName());
+                startActivityForResult(intent, AllConstants.USERNAME_CODE);
+            } else {
+                Intent intent = new Intent(getContext(), EditName.class);
+                startActivityForResult(intent, AllConstants.USERNAME_CODE);
             }
         });
 
@@ -188,20 +176,14 @@ public class ProfileFragment extends Fragment {
 
     private void uploadImage(Uri imageUri) {
         StorageReference storageReference = FirebaseStorage.getInstance().getReference(util.getUID()).child(AllConstants.IMAGE_PATH);
-        storageReference.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Task<Uri> task = taskSnapshot.getStorage().getDownloadUrl();
-                task.addOnCompleteListener(new OnCompleteListener<Uri>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Uri> task) {
-                        String uri = task.getResult().toString();
-                        profileViewModel.editImage(uri);
-                        sharedPreferences.putString("userImage", uri).apply();
+        storageReference.putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
+            Task<Uri> task = taskSnapshot.getStorage().getDownloadUrl();
+            task.addOnCompleteListener(task1 -> {
+                String uri = task1.getResult().toString();
+                profileViewModel.editImage(uri);
+                sharedPreferences.putString("userImage", uri).apply();
 
-                    }
-                });
-            }
+            });
         });
     }
 }

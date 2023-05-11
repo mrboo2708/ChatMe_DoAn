@@ -1,11 +1,5 @@
 package com.example.chatme_doan.activity;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,23 +17,28 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
 import com.bumptech.glide.Glide;
 import com.devlomi.record_view.OnRecordListener;
-import com.example.chatme_doan.adapter.GroupMessageAdapter;
-import com.example.chatme_doan.constants.AllConstants;
 import com.example.chatme_doan.GroupMessageModel;
 import com.example.chatme_doan.GroupModel;
+import com.example.chatme_doan.R;
+import com.example.chatme_doan.UserModel;
+import com.example.chatme_doan.adapter.GroupMessageAdapter;
+import com.example.chatme_doan.constants.AllConstants;
+import com.example.chatme_doan.databinding.ActivityGroupMessageBinding;
 import com.example.chatme_doan.model.GroupLastMessageModel;
 import com.example.chatme_doan.permissions.Permissions;
-import com.example.chatme_doan.R;
 import com.example.chatme_doan.services.SendMediaService;
-import com.example.chatme_doan.UserModel;
 import com.example.chatme_doan.utils.Util;
-import com.example.chatme_doan.databinding.ActivityGroupMessageBinding;
 import com.fxn.pix.Options;
 import com.fxn.pix.Pix;
 import com.fxn.utility.PermUtil;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -56,19 +55,20 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class GroupMessageActivity extends AppCompatActivity {
 
-    private ActivityGroupMessageBinding binding;
+    ActivityGroupMessageBinding binding;
     private Util util;
-    private String myId, audioPath;
-    private GroupModel currentModel;
+    String myId, audioPath;
+    GroupModel currentModel;
     private boolean isAdmin;
     private DatabaseReference databaseReference;
-    private ArrayList<GroupMessageModel> groupMessageModels;
-    private GroupMessageAdapter messageAdapter;
+    ArrayList<GroupMessageModel> groupMessageModels;
+    GroupMessageAdapter messageAdapter;
     private Permissions appPermissions;
-    private MediaRecorder mediaRecorder;
+    MediaRecorder mediaRecorder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,9 +87,7 @@ public class GroupMessageActivity extends AppCompatActivity {
         binding.groupMessageActivity.setAdapter(messageAdapter);
 
 
-        binding.backLayout.setOnClickListener(view -> {
-            onBackPressed();
-        });
+        binding.backLayout.setOnClickListener(view -> onBackPressed());
 
         if (getIntent().hasExtra("groupModel")) {
             currentModel = getIntent().getParcelableExtra("groupModel");
@@ -188,7 +186,7 @@ public class GroupMessageActivity extends AppCompatActivity {
                                 public void onDataChange(@NonNull DataSnapshot snap) {
                                     if (snap.exists()) {
                                         UserModel userModel = snap.getValue(UserModel.class);
-                                        messageModel.setName(userModel.getName());
+                                        messageModel.setName(Objects.requireNonNull(userModel).getName());
                                     }
                                 }
 
@@ -387,7 +385,7 @@ public class GroupMessageActivity extends AppCompatActivity {
         });
     }
 
-    private void sendRecordingMessage(String audioPath) {
+    void sendRecordingMessage(String audioPath) {
 
         StorageReference storageReference = FirebaseStorage.getInstance().getReference(currentModel.id + "/Media" +
                 "/Recording/" + myId + "/" + System.currentTimeMillis());
@@ -411,7 +409,7 @@ public class GroupMessageActivity extends AppCompatActivity {
         });
     }
 
-    private void setupRecoding() {
+    void setupRecoding() {
 
         mediaRecorder = new MediaRecorder();
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -467,33 +465,24 @@ public class GroupMessageActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle("Delete Group")
                 .setMessage("Are you sure to delete the group?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Group Detail")
-                                .child(currentModel.id);
-                        reference.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    DatabaseReference database = FirebaseDatabase.getInstance().getReference("Group Message")
-                                            .child(currentModel.id);
-                                    database.removeValue();
-                                    Toast.makeText(GroupMessageActivity.this, "Group Deleted", Toast.LENGTH_SHORT).show();
-                                    onBackPressed();
-                                } else {
-                                    Toast.makeText(GroupMessageActivity.this, "Error : " + task.getException(), Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Group Detail")
+                            .child(currentModel.id);
+                    reference.removeValue().addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            DatabaseReference database = FirebaseDatabase.getInstance().getReference("Group Message")
+                                    .child(currentModel.id);
+                            database.removeValue();
+                            Toast.makeText(GroupMessageActivity.this, "Group Deleted", Toast.LENGTH_SHORT).show();
+                            onBackPressed();
+                        } else {
+                            Toast.makeText(GroupMessageActivity.this, "Error : " + task.getException(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
 
-                    }
                 })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                .setNegativeButton("No", (dialog, which) -> {
 
-                    }
                 })
                 .create().show();
 
@@ -505,31 +494,22 @@ public class GroupMessageActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle("Leave Group")
                 .setMessage("Are you sure to leave the group?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Group Detail")
-                                .child(currentModel.id)
-                                .child("Members").child(FirebaseAuth.getInstance().getUid());
-                        reference.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(GroupMessageActivity.this, "Group Leaved", Toast.LENGTH_SHORT).show();
-                                    onBackPressed();
-                                } else {
-                                    Toast.makeText(GroupMessageActivity.this, "Error : " + task.getException(), Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Group Detail")
+                            .child(currentModel.id)
+                            .child("Members").child(FirebaseAuth.getInstance().getUid());
+                    reference.removeValue().addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(GroupMessageActivity.this, "Group Leaved", Toast.LENGTH_SHORT).show();
+                            onBackPressed();
+                        } else {
+                            Toast.makeText(GroupMessageActivity.this, "Error : " + task.getException(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
 
-                    }
                 })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                .setNegativeButton("No", (dialog, which) -> {
 
-                    }
                 })
                 .create().show();
     }

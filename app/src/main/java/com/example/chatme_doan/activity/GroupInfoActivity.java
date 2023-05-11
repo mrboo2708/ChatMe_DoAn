@@ -27,7 +27,6 @@ import com.example.chatme_doan.constants.AllConstants;
 import com.example.chatme_doan.databinding.ActivityGroupInfoBinding;
 import com.example.chatme_doan.databinding.AdminDialogLayoutBinding;
 import com.example.chatme_doan.permissions.Permissions;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -39,9 +38,11 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class GroupInfoActivity extends AppCompatActivity implements MemberItemInterface {
 
@@ -59,7 +60,7 @@ public class GroupInfoActivity extends AppCompatActivity implements MemberItemIn
         binding = ActivityGroupInfoBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         setSupportActionBar(binding.infoToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         memberAdapter = new GroupMemberAdapter(this);
 
         binding.memberRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -68,7 +69,7 @@ public class GroupInfoActivity extends AppCompatActivity implements MemberItemIn
 
         permissions = new Permissions();
         currentGroup = getIntent().getParcelableExtra("groupModel");
-        Toast.makeText(this, "" + currentGroup.members.size(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "" + Objects.requireNonNull(currentGroup.members).size(), Toast.LENGTH_SHORT).show();
 
         Glide.with(this).load(currentGroup.image).into(binding.expandedImage);
         binding.collapsingToolbar.setTitle(currentGroup.name);
@@ -87,7 +88,7 @@ public class GroupInfoActivity extends AppCompatActivity implements MemberItemIn
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot.exists()) {
                         UserModel userModel = snapshot.getValue(UserModel.class);
-                        userModel.setTyping(currentGroup.members.get(finalI).role);
+                        Objects.requireNonNull(userModel).setTyping(currentGroup.members.get(finalI).role);
                         arrayList.add(userModel);
                     }
 
@@ -131,8 +132,9 @@ public class GroupInfoActivity extends AppCompatActivity implements MemberItemIn
                 String groupName = edtName.getText().toString().trim();
                 if (!groupName.isEmpty()) {
 
+
                     DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Group Detail")
-                            .child(currentGroup.id);
+                            .child(Objects.requireNonNull(currentGroup.id));
                     Map<String, Object> map = new HashMap<>();
                     map.put("name", groupName);
                     reference.updateChildren(map);
@@ -162,7 +164,7 @@ public class GroupInfoActivity extends AppCompatActivity implements MemberItemIn
                 .setMessage("Are you sure to delete the group?")
                 .setPositiveButton("Yes", (dialog, which) -> {
                     DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Group Detail")
-                            .child(currentGroup.id);
+                            .child(Objects.requireNonNull(currentGroup.id));
                     reference.removeValue().addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             DatabaseReference database = FirebaseDatabase.getInstance().getReference("Group Message")
@@ -191,8 +193,8 @@ public class GroupInfoActivity extends AppCompatActivity implements MemberItemIn
                 .setMessage("Are you sure to leave the group?")
                 .setPositiveButton("Yes", (dialog, which) -> {
                     DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Group Detail")
-                            .child(currentGroup.id)
-                            .child("Members").child(FirebaseAuth.getInstance().getUid());
+                            .child(Objects.requireNonNull(currentGroup.id))
+                            .child("Members").child(Objects.requireNonNull(FirebaseAuth.getInstance().getUid()));
                     reference.removeValue().addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             Toast.makeText(GroupInfoActivity.this, "Group Leaved", Toast.LENGTH_SHORT).show();
@@ -252,7 +254,7 @@ public class GroupInfoActivity extends AppCompatActivity implements MemberItemIn
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
-                imageUri = result.getUri();
+                imageUri = Objects.requireNonNull(result).getUri();
                 updateGroupImage();
             }
         }
@@ -264,25 +266,22 @@ public class GroupInfoActivity extends AppCompatActivity implements MemberItemIn
         storageReference.child(currentGroup.id + AllConstants.GROUP_IMAGE).putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
             Toast.makeText(GroupInfoActivity.this, "Uploading Image.....", Toast.LENGTH_SHORT).show();
             Task<Uri> image = taskSnapshot.getStorage().getDownloadUrl();
-            image.addOnCompleteListener(new OnCompleteListener<Uri>() {
-                @Override
-                public void onComplete(@NonNull Task<Uri> task) {
-                    if (task.isSuccessful()) {
-                        String url = task.getResult().toString();
-                        currentGroup.image = url;
-                        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Group Detail")
-                                .child(currentGroup.id);
-                        Map<String, Object> map = new HashMap<>();
-                        map.put("image", url);
-                        reference.updateChildren(map);
-                        Glide.with(GroupInfoActivity.this).load(url).into(binding.expandedImage);
-                        Toast.makeText(GroupInfoActivity.this, "Image Updated", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Log.d("TAG", "onComplete: " + task.getException());
-                        Toast.makeText(GroupInfoActivity.this, "Error : " + task.getException(), Toast.LENGTH_SHORT).show();
-                    }
-
+            image.addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    String url = Objects.requireNonNull(task.getResult()).toString();
+                    currentGroup.image = url;
+                    DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Group Detail")
+                            .child(Objects.requireNonNull(currentGroup.id));
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("image", url);
+                    reference.updateChildren(map);
+                    Glide.with(GroupInfoActivity.this).load(url).into(binding.expandedImage);
+                    Toast.makeText(GroupInfoActivity.this, "Image Updated", Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.d("TAG", "onComplete: " + task.getException());
+                    Toast.makeText(GroupInfoActivity.this, "Error : " + task.getException(), Toast.LENGTH_SHORT).show();
                 }
+
             });
 
         });
@@ -321,28 +320,28 @@ public class GroupInfoActivity extends AppCompatActivity implements MemberItemIn
 
             layoutBinding.txtAdmin.setOnClickListener(view -> {
                 DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Group Detail")
-                        .child(currentGroup.id).child("Members").child(userModel.getuID());
+                        .child(Objects.requireNonNull(currentGroup.id)).child("Members").child(userModel.getuID());
 
                 Map<String, Object> map = new HashMap<>();
                 map.put("role", "admin");
                 reference.updateChildren(map);
                 alertDialog.dismiss();
                 arrayList.get(position).setTyping("admin");
-                currentGroup.members.get(position).role = "admin";
+                Objects.requireNonNull(currentGroup.members).get(position).role = "admin";
                 memberAdapter.setArrayList(arrayList);
             });
 
             layoutBinding.txtRAdmin.setOnClickListener(view -> {
 
                 DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Group Detail")
-                        .child(currentGroup.id).child("Members").child(userModel.getuID());
+                        .child(Objects.requireNonNull(currentGroup.id)).child("Members").child(userModel.getuID());
 
                 Map<String, Object> map = new HashMap<>();
                 map.put("role", "member");
                 reference.updateChildren(map);
                 alertDialog.dismiss();
                 arrayList.get(position).setTyping("member");
-                currentGroup.members.get(position).role = "member";
+                Objects.requireNonNull(currentGroup.members).get(position).role = "member";
                 memberAdapter.setArrayList(arrayList);
 
             });
@@ -351,14 +350,14 @@ public class GroupInfoActivity extends AppCompatActivity implements MemberItemIn
             layoutBinding.txtRemove.setOnClickListener(view -> {
 
                 DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Group Detail")
-                        .child(currentGroup.id).child("Members").child(userModel.getuID());
+                        .child(Objects.requireNonNull(currentGroup.id)).child("Members").child(userModel.getuID());
 
 
                 reference.removeValue();
 
                 alertDialog.dismiss();
                 arrayList.remove(position);
-                currentGroup.members.remove(position);
+                Objects.requireNonNull(currentGroup.members).remove(position);
                 memberAdapter.setArrayList(arrayList);
 
             });

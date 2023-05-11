@@ -1,5 +1,7 @@
 package com.example.chatme_doan.fragment;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,24 +18,19 @@ import androidx.fragment.app.Fragment;
 
 import com.example.chatme_doan.activity.DashBoard;
 import com.example.chatme_doan.constants.AllConstants;
-import com.example.chatme_doan.permissions.Permissions;
 import com.example.chatme_doan.databinding.FragmentUserDataBinding;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.example.chatme_doan.permissions.Permissions;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static android.app.Activity.RESULT_OK;
 
 
 public class UserData extends Fragment {
@@ -63,15 +60,12 @@ public class UserData extends Fragment {
         sharedPreferences = getContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
 
 
-        binding.imgPickImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        binding.imgPickImage.setOnClickListener(v -> {
 
-                if (permissions.isStorageOk(getContext()))
-                    pickImage();
-                else
-                    permissions.requestStorage(getActivity());
-            }
+            if (permissions.isStorageOk(getContext()))
+                pickImage();
+            else
+                permissions.requestStorage(getActivity());
         });
 
 
@@ -90,38 +84,29 @@ public class UserData extends Fragment {
     private void uploadData() {
 
         Toast.makeText(getContext(), "Uploading", Toast.LENGTH_SHORT).show();
-        storageReference.child(storagePath).putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Task<Uri> task = taskSnapshot.getStorage().getDownloadUrl();
-                task.addOnCompleteListener(new OnCompleteListener<Uri>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Uri> task) {
-                        String url = task.getResult().toString();
-                        Map<String, Object> map = new HashMap<>();
-                        map.put("name", name);
-                        map.put("status", status);
-                        map.put("image", url);
-                        databaseReference.child(firebaseAuth.getUid()).updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
+        storageReference.child(storagePath).putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
+            Task<Uri> task = taskSnapshot.getStorage().getDownloadUrl();
+            task.addOnCompleteListener(task12 -> {
+                String url = task12.getResult().toString();
+                Map<String, Object> map = new HashMap<>();
+                map.put("name", name);
+                map.put("status", status);
+                map.put("image", url);
+                databaseReference.child(firebaseAuth.getUid()).updateChildren(map).addOnCompleteListener(task1 -> {
+                    if (task1.isSuccessful()) {
 
-                                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                                    editor.putString("userImage", url).apply();
-                                    editor.putString("username", name).apply();
-                                    Intent intent = new Intent(getContext(), DashBoard.class);
-                                    startActivity(intent);
-                                    getActivity().finish();
-                                } else
-                                    Toast.makeText(getContext(), "Fail to upload", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-
-
-                    }
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("userImage", url).apply();
+                        editor.putString("username", name).apply();
+                        Intent intent = new Intent(getContext(), DashBoard.class);
+                        startActivity(intent);
+                        getActivity().finish();
+                    } else
+                        Toast.makeText(getContext(), "Fail to upload", Toast.LENGTH_SHORT).show();
                 });
-            }
+
+
+            });
         });
 
     }

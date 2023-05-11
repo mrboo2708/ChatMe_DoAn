@@ -244,55 +244,49 @@ public class GroupMemberFragment extends Fragment implements ContactItemInterfac
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Group Detail");
         String groupId = databaseReference.push().getKey();
         StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-        storageReference.child(groupId + AllConstants.GROUP_IMAGE).putFile(groupImage).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Toast.makeText(requireContext(), "Working........", Toast.LENGTH_SHORT).show();
-                Task<Uri> image = taskSnapshot.getStorage().getDownloadUrl();
-                image.addOnCompleteListener(new OnCompleteListener<Uri>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Uri> task) {
-                        if (task.isSuccessful()) {
-                            String url = task.getResult().toString();
-                            GroupModel groupModel = new GroupModel();
-                            groupModel.adminId = firebaseAuth.getUid();
-                            groupModel.adminName = getActivity().getSharedPreferences("UserData", Context.MODE_PRIVATE)
-                                    .getString("username", "");
-                            groupModel.name = groupName;
-                            groupModel.createdAt = String.valueOf(System.currentTimeMillis());
-                            groupModel.image = url;
-                            groupModel.id = groupId;
+        storageReference.child(groupId + AllConstants.GROUP_IMAGE).putFile(groupImage).addOnSuccessListener(taskSnapshot -> {
+            Toast.makeText(requireContext(), "Working........", Toast.LENGTH_SHORT).show();
+            Task<Uri> image = taskSnapshot.getStorage().getDownloadUrl();
+            image.addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    String url = task.getResult().toString();
+                    GroupModel groupModel = new GroupModel();
+                    groupModel.adminId = firebaseAuth.getUid();
+                    groupModel.adminName = getActivity().getSharedPreferences("UserData", Context.MODE_PRIVATE)
+                            .getString("username", "");
+                    groupModel.name = groupName;
+                    groupModel.createdAt = String.valueOf(System.currentTimeMillis());
+                    groupModel.image = url;
+                    groupModel.id = groupId;
 
-                            databaseReference.child(groupId).setValue(groupModel);
-                            Toast.makeText(requireContext(), "Few seconds.....", Toast.LENGTH_SHORT).show();
+                    databaseReference.child(groupId).setValue(groupModel);
+                    Toast.makeText(requireContext(), "Few seconds.....", Toast.LENGTH_SHORT).show();
 
-                            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Group Detail").child(groupId).child("Members");
-                            GroupMemberModel groupMemberModel = new GroupMemberModel();
-                            groupMemberModel.id = firebaseAuth.getUid();
-                            groupMemberModel.role = "admin";
+                    DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Group Detail").child(groupId).child("Members");
+                    GroupMemberModel groupMemberModel = new GroupMemberModel();
+                    groupMemberModel.id = firebaseAuth.getUid();
+                    groupMemberModel.role = "admin";
 
-                            reference.child(firebaseAuth.getUid()).setValue(groupMemberModel);
+                    reference.child(firebaseAuth.getUid()).setValue(groupMemberModel);
 
-                            for (UserModel userModel : selectedContacts) {
+                    for (UserModel userModel : selectedContacts) {
 
-                                GroupMemberModel memberModel = new GroupMemberModel();
-                                memberModel.id = userModel.getuID();
-                                memberModel.role = "member";
-                                reference.child(userModel.getuID()).setValue(memberModel);
-                            }
-
-                            Toast.makeText(requireContext(), "Group Created", Toast.LENGTH_SHORT).show();
-                            getActivity().finish();
-
-
-                        } else {
-                            Toast.makeText(requireContext(), "Error : " + task.getException(), Toast.LENGTH_SHORT).show();
-                        }
-
+                        GroupMemberModel memberModel = new GroupMemberModel();
+                        memberModel.id = userModel.getuID();
+                        memberModel.role = "member";
+                        reference.child(userModel.getuID()).setValue(memberModel);
                     }
-                });
 
-            }
+                    Toast.makeText(requireContext(), "Group Created", Toast.LENGTH_SHORT).show();
+                    getActivity().finish();
+
+
+                } else {
+                    Toast.makeText(requireContext(), "Error : " + task.getException(), Toast.LENGTH_SHORT).show();
+                }
+
+            });
+
         });
     }
 }

@@ -7,13 +7,15 @@ import android.os.Bundle;
 import com.example.chatme_doan.fragment.GetGroupDetailFragment;
 import com.example.chatme_doan.R;
 
+import java.util.Objects;
+
 public class CreateGroupActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_group);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         getSupportFragmentManager().beginTransaction().add(R.id.groupContainer,
                 new GetGroupDetailFragment()).commit();

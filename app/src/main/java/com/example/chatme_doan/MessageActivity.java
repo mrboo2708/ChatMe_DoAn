@@ -456,9 +456,7 @@ public class MessageActivity extends AppCompatActivity {
 
     private void sendNotification(JSONObject to) {
 
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, AllConstants.NOTIFICATION_URL, to, response -> {
-            Log.d("notification", "sendNotification: " + response);
-        }, error -> {
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, AllConstants.NOTIFICATION_URL, to, response -> Log.d("notification", "sendNotification: " + response), error -> {
             Log.d("notification", "sendNotification: " + error);
         }) {
             @Override

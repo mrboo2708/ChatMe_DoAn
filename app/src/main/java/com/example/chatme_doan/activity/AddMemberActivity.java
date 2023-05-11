@@ -30,18 +30,19 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class AddMemberActivity extends AppCompatActivity implements ContactItemInterface {
 
     private ActivityAddMemberBinding binding;
     private Permissions permissions;
     private DatabaseReference databaseReference;
-    private GroupContactAdapter groupContactAdapter;
+    GroupContactAdapter groupContactAdapter;
     private SelectedContactAdapter selectedContactAdapter;
     ArrayList<UserModel> appContacts, selectedContacts;
     String userPhoneNumber;
     FirebaseAuth firebaseAuth;
-    private GroupModel groupModel;
+    GroupModel groupModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,14 +50,14 @@ public class AddMemberActivity extends AppCompatActivity implements ContactItemI
         binding = ActivityAddMemberBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         groupModel = getIntent().getParcelableExtra("groupModel");
 
 
         permissions = new Permissions();
         firebaseAuth = FirebaseAuth.getInstance();
-        userPhoneNumber = firebaseAuth.getCurrentUser().getPhoneNumber();
+        userPhoneNumber = Objects.requireNonNull(firebaseAuth.getCurrentUser()).getPhoneNumber();
         groupContactAdapter = new GroupContactAdapter(this);
         selectedContactAdapter = new SelectedContactAdapter(this, this);
 
@@ -79,13 +80,13 @@ public class AddMemberActivity extends AppCompatActivity implements ContactItemI
             if (selectedContacts.size() > 0) {
 
                 DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Group Detail")
-                        .child(groupModel.id).child("Members");
+                        .child(Objects.requireNonNull(groupModel.id)).child("Members");
                 for (UserModel userModel : selectedContacts) {
 
                     GroupMemberModel memberModel = new GroupMemberModel();
                     memberModel.id = userModel.getuID();
                     memberModel.role = "member";
-                    groupModel.members.add(memberModel);
+                    Objects.requireNonNull(groupModel.members).add(memberModel);
                     reference.child(userModel.getuID()).setValue(memberModel);
                 }
 
@@ -139,7 +140,7 @@ public class AddMemberActivity extends AppCompatActivity implements ContactItemI
 
             }
 
-            cursor.close();
+            Objects.requireNonNull(cursor).close();
             getAppContacts(userContacts);
 
         } else {
@@ -159,23 +160,23 @@ public class AddMemberActivity extends AppCompatActivity implements ContactItemI
                 if (dataSnapshot.exists()) {
                     appContacts.clear();
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        String number = ds.child("number").getValue().toString();
-                        String userId = ds.child("uID").getValue().toString();
+                        String number = Objects.requireNonNull(ds.child("number").getValue()).toString();
+                        String userId = Objects.requireNonNull(ds.child("uID").getValue()).toString();
 
 
                         for (UserModel userModel : mobileContacts) {
 
                             if (userModel.getNumber().equals(number) && !number.equals(userPhoneNumber)) {
 
-                                for (GroupMemberModel memberModel : groupModel.members) {
+                                for (GroupMemberModel memberModel : Objects.requireNonNull(groupModel.members)) {
 
                                     if (!userId.equals(memberModel.id)) {
 
-                                        String image = ds.child("image").getValue().toString();
-                                        String status = ds.child("status").getValue().toString();
-                                        String uID = ds.child("uID").getValue().toString();
+                                        String image = Objects.requireNonNull(ds.child("image").getValue()).toString();
+                                        String status = Objects.requireNonNull(ds.child("status").getValue()).toString();
+                                        String uID = Objects.requireNonNull(ds.child("uID").getValue()).toString();
 
-                                        String name = ds.child("name").getValue().toString();
+                                        String name = Objects.requireNonNull(ds.child("name").getValue()).toString();
                                         UserModel registeredUser = new UserModel();
 
                                         registeredUser.setName(name);

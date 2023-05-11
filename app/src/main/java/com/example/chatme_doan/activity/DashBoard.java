@@ -32,27 +32,24 @@ public class DashBoard extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction().replace(R.id.dashboardContainer, new ChatFragment()).commit();
         }
 
-        navigationBar.setOnItemSelectedListener(new ChipNavigationBar.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(int i) {
-                switch (i) {
+        navigationBar.setOnItemSelectedListener(i -> {
+            switch (i) {
 
-                    case R.id.chat:
-                        fragment = new ChatFragment();
-                        break;
-                    case R.id.contacts:
-                        fragment = new ContactFragment();
-                        break;
-                    case R.id.profile:
-                        fragment = new ProfileFragment();
-                        break;
-                    case R.id.group:
-                        fragment = new GroupFragment();
-                }
-
-                if (fragment != null)
-                    getSupportFragmentManager().beginTransaction().replace(R.id.dashboardContainer, fragment).commit();
+                case R.id.chat:
+                    fragment = new ChatFragment();
+                    break;
+                case R.id.contacts:
+                    fragment = new ContactFragment();
+                    break;
+                case R.id.profile:
+                    fragment = new ProfileFragment();
+                    break;
+                case R.id.group:
+                    fragment = new GroupFragment();
             }
+
+            if (fragment != null)
+                getSupportFragmentManager().beginTransaction().replace(R.id.dashboardContainer, fragment).commit();
         });
 
 
