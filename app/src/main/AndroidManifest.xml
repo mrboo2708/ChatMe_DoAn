@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.chatme_doan">
+    package="com.chatapp.chatme_doan">
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -31,28 +31,28 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="q">
-        <activity android:name="com.example.chatme_doan.activity.AddMemberActivity"></activity>
+        <activity android:name="com.chatapp.chatme_doan.activity.AddMemberActivity"></activity>
         <activity
-            android:name="com.example.chatme_doan.activity.GroupInfoActivity"
+            android:name="com.chatapp.chatme_doan.activity.GroupInfoActivity"
             android:theme="@style/NoActionBar" />
         <activity
-            android:name="com.example.chatme_doan.activity.GroupMessageActivity"
+            android:name="com.chatapp.chatme_doan.activity.GroupMessageActivity"
             android:theme="@style/NoActionBar" />
-        <activity android:name="com.example.chatme_doan.activity.CreateGroupActivity" />
-        <activity android:name="com.example.chatme_doan.activity.UserInfo" />
+        <activity android:name="com.chatapp.chatme_doan.activity.CreateGroupActivity" />
+        <activity android:name="com.chatapp.chatme_doan.activity.UserInfo" />
         <activity
-            android:name="com.example.chatme_doan.MessageActivity"
+            android:name="com.chatapp.chatme_doan.MessageActivity"
             android:theme="@style/NoActionBar" />
-        <activity android:name="com.example.chatme_doan.activity.EditName" />
-        <activity android:name="com.example.chatme_doan.activity.DashBoard" />
+        <activity android:name="com.chatapp.chatme_doan.activity.EditName" />
+        <activity android:name="com.chatapp.chatme_doan.activity.DashBoard" />
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
         <activity
-            android:name="com.example.chatme_doan.activity.MainActivity"
+            android:name="com.chatapp.chatme_doan.activity.MainActivity"
             android:theme="@style/NoActionBar" />
         <activity
-            android:name="com.example.chatme_doan.activity.SplashActivity"
+            android:name="com.chatapp.chatme_doan.activity.SplashActivity"
             android:theme="@style/NoActionBar"
             android:exported="true">
             <intent-filter>
@@ -63,14 +63,14 @@
         </activity>
 
         <service
-            android:name="com.example.chatme_doan.services.FirebaseNotificationService"
+            android:name="com.chatapp.chatme_doan.services.FirebaseNotificationService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
         <service
-            android:name="com.example.chatme_doan.services.SendMediaService"
+            android:name="com.chatapp.chatme_doan.services.SendMediaService"
             android:foregroundServiceType="dataSync" />
     </application>
 

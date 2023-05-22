@@ -6,7 +6,7 @@
 
         <variable
             name="chatModel"
-            type="com.example.chatme_doan.ChatModel" />
+            type="com.chatapp.chatme_doan.ChatModel" />
 
         <import type="android.graphics.drawable.Drawable" />
 
@@ -101,6 +101,7 @@
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:layout_margin="10dp"
+
                 android:src="@drawable/ic_launcher_background" />
 
             <ImageView
