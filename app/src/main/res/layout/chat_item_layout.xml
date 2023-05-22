@@ -6,7 +6,7 @@
 
         <variable
             name="chatModel"
-            type="com.example.chatme_doan.ChatModel" />
+            type="com.chatapp.chatme_doan.ChatModel" />
 
         <import type="android.graphics.drawable.Drawable" />
 

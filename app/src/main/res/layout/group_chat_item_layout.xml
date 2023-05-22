@@ -6,7 +6,7 @@
 
         <variable
             name="groupModel"
-            type="com.example.chatme_doan.GroupModel" />
+            type="com.chatapp.chatme_doan.GroupModel" />
 
         <import type="android.graphics.drawable.Drawable" />
 
