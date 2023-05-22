@@ -8,7 +8,7 @@ android {
     buildToolsVersion "29.0.3"
 
     defaultConfig {
-        applicationId "com.example.chatme_doan"
+        applicationId "com.chatapp.chatme_doan"
         minSdkVersion 23
         targetSdkVersion 33
         versionCode 1
