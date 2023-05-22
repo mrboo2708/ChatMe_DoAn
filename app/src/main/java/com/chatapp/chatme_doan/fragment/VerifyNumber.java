@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import com.chatapp.chatme_doan.R;
 import com.chatapp.chatme_doan.UserModel;
 import com.chatapp.chatme_doan.constants.AllConstants;
+import com.chatapp.chatme_doan.databinding.FragmentVerifyNumberBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;

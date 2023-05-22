@@ -25,6 +25,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.chatapp.chatme_doan.activity.EditName;
 import com.chatapp.chatme_doan.constants.AllConstants;
+import com.chatapp.chatme_doan.databinding.FragmentProfileBinding;
 import com.chatapp.chatme_doan.permissions.Permissions;
 import com.chatapp.chatme_doan.R;
 import com.chatapp.chatme_doan.UserModel;

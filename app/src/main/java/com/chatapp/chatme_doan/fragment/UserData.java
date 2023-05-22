@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 
 import com.chatapp.chatme_doan.activity.DashBoard;
 import com.chatapp.chatme_doan.constants.AllConstants;
+import com.chatapp.chatme_doan.databinding.FragmentUserDataBinding;
 import com.chatapp.chatme_doan.permissions.Permissions;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
